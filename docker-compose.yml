@@ -1,0 +1,34 @@
+version: '3.4'
+
+services:
+  submissionservice:
+    image: ${DOCKER_REGISTRY-}submissionservice
+    build:
+      context: .
+      dockerfile: SubmissionService/Dockerfile
+
+  postgresdb:
+    image: postgres:12-alpine
+    container_name: jobStorageDb
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitMq
+    restart: unless-stopped
+    ports:
+      - 9001:15672
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
