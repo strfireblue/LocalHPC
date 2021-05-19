@@ -7,6 +7,12 @@ services:
       context: .
       dockerfile: SubmissionService/Dockerfile
 
+  nodeservice:
+    image: ${DOCKER_REGISTRY-}nodeservice
+    build:
+      context: .
+      dockerfile: SubmissionService/Dockerfile
+
   postgresdb:
     image: postgres:12-alpine
     container_name: jobStorageDb
