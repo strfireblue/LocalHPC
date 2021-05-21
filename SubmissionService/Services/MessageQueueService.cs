@@ -10,6 +10,8 @@ namespace SubmissionService.Services
 {
     public class MessageQueueService
     {
+        private const string ExchangeName = "Jobs";
+        private const string QueueName = "HpcJobs";
 
         // TODO: Inject configuration POCO
         public MessageQueueService()
@@ -34,15 +36,17 @@ namespace SubmissionService.Services
             using (var channel = connection.CreateModel())
             {
 
-                channel.ExchangeDeclare("Jobs", ExchangeType.Fanout);
+                channel.ExchangeDeclare(ExchangeName, ExchangeType.Fanout);
 
 
-                channel.QueueDeclare("HpcJobs", durable: true, exclusive: false, autoDelete: false, arguments: null);
+                channel.QueueDeclare(QueueName, durable: true, exclusive: false, autoDelete: false, arguments: null);
+
+                channel.QueueBind(queue: QueueName, exchange: ExchangeName, routingKey: "");
 
 
                 var body = System.Text.Encoding.UTF8.GetBytes(Newtonsoft.Json.JsonConvert.SerializeObject(job));
 
-                channel.BasicPublish("Jobs", "", basicProperties: null, body: body);
+                channel.BasicPublish(ExchangeName, "", basicProperties: null, body: body);
 
             }
 
